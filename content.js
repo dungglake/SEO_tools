@@ -18,19 +18,17 @@ function getContentOverview() {
     return {};
   }
 
-  const contentElements = Array.from(contentArea.children).filter(el => 
-    !el.classList.contains('widget') && !Array.from(el.classList).some(cls => cls.includes('rank-math')) && el.tagName.toLowerCase() !== 'button'
-  );
+  const contentElements = Array.from(contentArea.children);
 
   const words = contentElements.reduce((allWords, el) => allWords.concat(el.innerText.split(/\s+/).filter(word => word.trim() && !["Add", "Image", "FAQ"].includes(word))), []);
   const wordCount = words.length;
 
-  // Display approximate word count in create/edit mode
+  // Display word count in create/edit mode
   const url = window.location.href;
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const wordCountElement = document.getElementById('word-count');
     if (wordCountElement) {
-      wordCountElement.textContent = `(approx) ${wordCount} words`;
+      wordCountElement.textContent = `${wordCount} words`;
     }
   }
 
@@ -41,7 +39,7 @@ function getContentOverview() {
     metaDescription,
     thumbnail,
     thumbnailAlt,
-    wordCount: `(approx) ${wordCount} words`
+    wordCount: `${wordCount} words`
   };
 }
 
@@ -75,9 +73,7 @@ function getImagesAndLinks() {
   let totalImagesWithCaption = 0;
   let totalImagesWithoutCaption = 0;
 
-  const images = Array.from(contentArea.querySelectorAll('img')).filter(img => 
-    !img.closest('.widget') && !Array.from(img.classList).some(cls => cls.includes('rank-math'))
-  ).map(img => {
+  const images = Array.from(contentArea.querySelectorAll('img')).map(img => {
     const figure = img.closest('figure');
     const caption = figure ? figure.querySelector('figcaption') : null;
 
@@ -117,9 +113,7 @@ function getImagesAndLinks() {
     };
   });
 
-  const links = Array.from(contentArea.querySelectorAll('a')).filter(link => 
-    !link.closest('.widget') && !Array.from(link.classList).some(cls => cls.includes('rank-math'))
-  ).map(link => {
+  const links = Array.from(contentArea.querySelectorAll('a')).map(link => {
     const is_duplicated = Array.from(contentArea.querySelectorAll('a')).filter(l => l.href === link.href).length > 1;
     if (is_duplicated) {
       duplicateLinks.push(link);

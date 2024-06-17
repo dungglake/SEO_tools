@@ -101,7 +101,7 @@ function displayOverview(data, action) {
   thumbnail.src = data.thumbnail || '';
   thumbnail.alt = data.thumbnailAlt || '';
   document.getElementById('thumbnail-alt').textContent = data.thumbnailAlt || '';
-  document.getElementById('word-count').textContent = `(approx) ${data.wordCount}` || '(approx) 0';
+  document.getElementById('word-count').textContent = `${data.wordCount}`;
 }
 
 function displayData(images = [], links = [], overview = {}) {
