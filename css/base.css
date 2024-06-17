@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+    width: 650px;
+    height: 600px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f1f1f1;
+}
+
+#message {
+    color: red;
+    text-align: center;
+    margin: 0;
+}

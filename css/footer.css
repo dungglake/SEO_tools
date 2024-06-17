@@ -1,0 +1,21 @@
+footer {
+    text-align: center;
+    font-size: 12px;
+    background-color: #1e3c72;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    position: fixed; /* Fixed position at the bottom */
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    z-index: 100; /* Ensure the footer is above other elements */
+  }
+  
+  .footer-logo {
+    width: 50px;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  

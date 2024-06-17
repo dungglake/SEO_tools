@@ -1,0 +1,108 @@
+.overview-section,
+.links-section,
+.images-section {
+  margin-bottom: 20px;
+  width: calc(100% - 40px);
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.image-overview-section .stat-box {
+  background-color: #fdebd3;
+}
+
+.link-overview-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.link-overview-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  text-align: center;
+  border-radius: 0px;
+  width: calc(16.666% - 10px);
+  font-size: 10px;
+  box-sizing: border-box;
+  height: 40px;
+  margin: 5px;
+  border-left: 1px solid #ddd;
+}
+
+.link-overview-box:first-child {
+  border-left: none;
+}
+
+.link-overview-box span {
+  font-size: 12px;
+  font-weight: normal;
+  margin-top: 0;
+  padding-top: 0;
+  line-height: 1;
+}
+
+.link-overview-label {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  color: #000;
+  margin-bottom: 0;
+  background-color: #e0f7ff; /* Light blue background */
+}
+
+.link-overview-container span {
+  margin-top: 0;
+  padding-top: 0;
+  font-weight: bold;
+}
+
+.image-overview-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.image-overview-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  text-align: center;
+  border-radius: 0px;
+  width: calc(25% - 10px);
+  font-size: 10px;
+  box-sizing: border-box;
+  height: 40px;
+  margin: 5px;
+  border-left: 1px solid #ddd;
+  color: #000;
+}
+
+.image-overview-box:first-child {
+  border-left: none;
+}
+
+.image-overview-box span {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.image-overview-label {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  color: #000;
+  margin-bottom: 0;
+  background-color: #e0f7ff; /* Light blue background */
+}

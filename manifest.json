@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "SEO Analyser",
+  "version": "1.0",
+  "description": "Analyse SEO elements of the current page",
+  "permissions": ["activeTab", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.vietnix.vn/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/logo.png"],
+      "matches": ["*://*.vietnix.vn/*"]
+    }
+  ]
+}
