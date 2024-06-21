@@ -1,21 +1,16 @@
 import Countable from 'countable';
 
 let highlightedElement = null;
-let currentDuplicateIndex = -1;
 const duplicateLinks = [];
 
-// Function to inject CSS dynamically
-function injectCSS() {
+function injectHighlightCSS() {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = chrome.runtime.getURL('css/styles.css');
-  link.onload = () => console.log('CSS loaded successfully');
-  link.onerror = (e) => console.error('Error loading CSS', e);
+  link.href = chrome.runtime.getURL('css/highlight.css');
   document.head.appendChild(link);
 }
-
-injectCSS();
+injectHighlightCSS();
 
 function getContentOverview() {
   console.log("Fetching content overview...");
@@ -37,7 +32,6 @@ function getContentOverview() {
   let totalWordCount = 0;
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
-    // Edit mode: Count words in the content area excluding "rank-math-faq"
     const faq = contentArea.querySelector('#rank-math-faq');
     let faqWordCount = 0;
 
@@ -65,7 +59,6 @@ function getContentOverview() {
     totalWordCount = faqWordCount + otherContentWordCount;
 
   } else {
-    // View mode: Count words in the content area excluding "rank-math-faq"
     const faq = contentArea.querySelector('#rank-math-faq');
     let faqWordCount = 0;
 
@@ -97,10 +90,8 @@ function getContentOverview() {
     }
   }
 
-  // Print the concatenated words to the console
   console.log("Total word count:", totalWordCount);
 
-  // Display word count in create/edit mode
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const wordCountElement = document.getElementById('word-count');
     if (wordCountElement) {
@@ -153,7 +144,10 @@ function getImagesAndLinks() {
   let totalImagesWithCaption = 0;
   let totalImagesWithoutCaption = 0;
 
-  const images = Array.from(contentArea.querySelectorAll('img')).map(img => {
+  const images = Array.from(contentArea.querySelectorAll('img')).filter(img => {
+    const format = img.src.split('.').pop().toLowerCase();
+    return format !== 'svg'; // Exclude SVG images
+  }).map(img => {
     const figure = img.closest('figure');
     const caption = figure ? figure.querySelector('figcaption') : null;
 
@@ -258,10 +252,14 @@ function highlightAnchor(anchorText) {
 
   let found = false; // Flag to check if any element is found and highlighted
   elements.forEach(el => {
+    console.log("Checking element:", el, "with text:", el.textContent.trim());
     if (el.textContent.trim() === anchorText.trim()) {
       console.log("Match found. Highlighting element:", el);
       el.classList.add('highlighted'); // Set new highlight
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        console.log("Scrolling to element:", el);
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100); // Allow other events to process
       highlightedElement = el;
       found = true;
     }
@@ -275,31 +273,39 @@ function highlightAnchor(anchorText) {
   }
 }
 
-function findNextDuplicate() {
-  console.log("Finding next duplicate link");
-  if (duplicateLinks.length === 0) return;
+function resetHighlights() {
+  console.log("Resetting highlights");
 
-  if (highlightedElement) {
-    highlightedElement.style.backgroundColor = '';
-    highlightedElement = null;
+  const highlightedElements = document.querySelectorAll('.highlighted');
+  highlightedElements.forEach(el => {
+    el.classList.remove('highlighted');
+  });
+
+  highlightedElement = null;
+  duplicateLinks.length = 0;
+}
+
+function highlightAllDuplicates() {
+  console.log("Highlighting all duplicate links");
+
+  duplicateLinks.forEach(link => {
+    link.classList.add('highlighted');
+  });
+
+  if (duplicateLinks.length > 0) {
+    setTimeout(() => {
+      duplicateLinks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100); // Allow other events to process
   }
-
-  currentDuplicateIndex++;
-  if (currentDuplicateIndex >= duplicateLinks.length) {
-    currentDuplicateIndex = 0;
-  }
-
-  const nextDuplicate = duplicateLinks[currentDuplicateIndex];
-  nextDuplicate.style.backgroundColor = 'lightyellow';
-  nextDuplicate.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  highlightedElement = nextDuplicate;
 }
 
 function scrollToAnchor(anchorText) {
   const elements = document.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
   elements.forEach(el => {
     if (el.textContent.trim() === anchorText.trim()) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100); // Allow other events to process
     }
   });
 }
@@ -308,7 +314,9 @@ function scrollToImage(imageUrl) {
   const images = document.querySelectorAll('img');
   images.forEach(img => {
     if (img.src === imageUrl || img.getAttribute('data-src') === imageUrl) {
-      img.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        img.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100); // Allow other events to process
     }
   });
 }
@@ -325,12 +333,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(result);
     } else if (request.action === 'highlightAnchor') {
       highlightAnchor(request.anchorText);
+      sendResponse({ status: 'done' });
     } else if (request.action === 'scrollToAnchor') {
       scrollToAnchor(request.anchorText);
+      sendResponse({ status: 'done' });
     } else if (request.action === 'scrollToImage') {
       scrollToImage(request.imageUrl);
-    } else if (request.action === 'findNextDuplicate') {
-      findNextDuplicate(request.anchorText);
+      sendResponse({ status: 'done' });
+    } else if (request.action === 'highlightAllDuplicates') {
+      highlightAllDuplicates();
+      sendResponse({ status: 'done' });
+    } else if (request.action === 'resetHighlights') {
+      resetHighlights();
+      sendResponse({ status: 'done' });
     } else {
       sendResponse({ error: "Unknown action" });
     }
@@ -339,6 +354,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ error: error.message });
   }
 
-  // Indicate that the response is asynchronous
   return true;
 });

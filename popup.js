@@ -90,7 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
-  
+
+  // Reset highlights
+  const resetButton = document.getElementById('reset-highlights');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'resetHighlights' });
+      });
+    });
+  }
 });
 
 function displayOverview(data, action) {
@@ -228,18 +237,6 @@ function displayData(images = [], links = [], overview = {}) {
     numberCell.textContent = link.link_id;
     anchorCell.textContent = link.anchor;
     anchorCell.style.cursor = 'pointer';
-
-    if (link.is_duplicated) {
-      const findNextButton = document.createElement('button');
-      findNextButton.textContent = 'Find next';
-      findNextButton.style.marginLeft = '10px';
-      findNextButton.addEventListener('click', () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          chrome.tabs.sendMessage(tabs[0].id, { action: 'findNextDuplicate', anchorText: link.anchor });
-        });
-      });
-      anchorCell.appendChild(findNextButton);
-    }
 
     anchorCell.addEventListener('click', () => {
       console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked

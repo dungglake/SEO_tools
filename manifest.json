@@ -29,6 +29,7 @@
         "css/footer.css",
         "css/image-view.css",
         "css/utilities.css",
+        "css/button.css",
         "css/highlight.css"
       ],
       "matches": ["*://*.vietnix.vn/*"]
