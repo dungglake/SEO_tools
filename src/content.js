@@ -53,8 +53,8 @@ function getContentOverview() {
       otherContentWordCount = counter.words;
     });
 
-    console.log("Other content word count (edit mode):", otherContentWordCount);
-    console.log("FAQ word count (edit mode):", faqWordCount);
+    //console.log("Other content word count (edit mode):", otherContentWordCount);
+    //console.log("FAQ word count (edit mode):", faqWordCount);
 
     totalWordCount = faqWordCount + otherContentWordCount;
 
@@ -78,8 +78,8 @@ function getContentOverview() {
         otherContentWordCount = counter.words;
       });
 
-      console.log("Other content word count (view mode):", otherContentWordCount);
-      console.log("FAQ word count (view mode):", faqWordCount);
+      //console.log("Other content word count (view mode):", otherContentWordCount);
+      //console.log("FAQ word count (view mode):", faqWordCount);
 
       totalWordCount = faqWordCount + otherContentWordCount;
 
@@ -90,7 +90,7 @@ function getContentOverview() {
     }
   }
 
-  console.log("Total word count:", totalWordCount);
+  //console.log("Total word count:", totalWordCount);
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const wordCountElement = document.getElementById('word-count');
@@ -98,8 +98,6 @@ function getContentOverview() {
       wordCountElement.textContent = `${totalWordCount} words`;
     }
   }
-
-  console.log("Counted words:", totalWordCount);
 
   return {
     metaTitle,
@@ -115,11 +113,11 @@ function getContentArea() {
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const contentArea = document.querySelector('.wp-block-post-content');
-    console.log("Content area for edit mode:", contentArea);
+    //console.log("Content area for edit mode:", contentArea);
     return contentArea;
   } else {
     const contentArea = document.querySelector('#vnx_post_content');
-    console.log("Content area for view mode:", contentArea);
+    ///console.log("Content area for view mode:", contentArea);
     return contentArea;
   }
 }
@@ -233,10 +231,10 @@ function getImagesAndLinks() {
 }
 
 function highlightAnchor(anchorText) {
-  console.log("highlightAnchor function called with anchorText:", anchorText);
+  //console.log("highlightAnchor function called with anchorText:", anchorText);
 
   if (highlightedElement) {
-    console.log("Clearing previous highlight:", highlightedElement);
+    //console.log("Clearing previous highlight:", highlightedElement);
     highlightedElement.classList.remove('highlighted'); // Clear previous highlight
     highlightedElement = null;
   }
@@ -248,33 +246,26 @@ function highlightAnchor(anchorText) {
   }
 
   const elements = contentArea.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
-  console.log("Total elements found in content area:", elements.length);
+  //console.log("Total elements found in content area:", elements.length);
 
   let found = false; // Flag to check if any element is found and highlighted
   elements.forEach(el => {
-    console.log("Checking element:", el, "with text:", el.textContent.trim());
+    //console.log("Checking element:", el, "with text:", el.textContent.trim());
     if (el.textContent.trim() === anchorText.trim()) {
-      console.log("Match found. Highlighting element:", el);
+      //console.log("Match found. Highlighting element:", el);
       el.classList.add('highlighted'); // Set new highlight
       setTimeout(() => {
-        console.log("Scrolling to element:", el);
+        //console.log("Scrolling to element:", el);
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100); // Allow other events to process
       highlightedElement = el;
       found = true;
     }
   });
-
-  // Log if the element was found and highlighted
-  if (found) {
-    console.log("Element highlighted:", highlightedElement);
-  } else {
-    console.log("No matching element found for anchor text:", anchorText);
-  }
 }
 
 function resetHighlights() {
-  console.log("Resetting highlights");
+  //console.log("Resetting highlights");
 
   const highlightedElements = document.querySelectorAll('.highlighted');
   highlightedElements.forEach(el => {
@@ -286,7 +277,7 @@ function resetHighlights() {
 }
 
 function highlightAllDuplicates() {
-  console.log("Highlighting all duplicate links");
+  //console.log("Highlighting all duplicate links");
 
   duplicateLinks.forEach(link => {
     link.classList.add('highlighted');
@@ -322,7 +313,7 @@ function scrollToImage(imageUrl) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Received request:", request);
+  //console.log("Received request:", request);
 
   try {
     if (request.action === 'getContentOverview' || request.action === 'getContentOverviewFromCreate' || request.action === 'getContentOverviewFromEdit') {

@@ -82,10 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (event) => {
       const anchorText = link.textContent.trim();
-      console.log("Anchor clicked:", anchorText); // Log when anchor is clicked
+      //console.log("Anchor clicked:", anchorText); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText }, (response) => {
-          console.log("Response from content script:", response); // Log the response from content script
+          //console.log("Response from content script:", response); // Log the response from content script
         });
       });
     });
@@ -252,10 +252,10 @@ function displayData(images = [], links = [], overview = {}) {
     }
 
     anchorCell.addEventListener('click', () => {
-      console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
+      //console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText: link.anchor }, (response) => {
-          console.log("Response from content script:", response); // Log the response from content script
+          //console.log("Response from content script:", response); // Log the response from content script
         });
       });
     });
