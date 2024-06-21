@@ -175,9 +175,16 @@ function displayData(images = [], links = [], overview = {}) {
 
   // Populate other image formats list
   const otherImageFormatsList = document.getElementById('other-image-formats-list');
-  otherImageFormatsList.innerHTML = '';
+  const otherFormatsHeader = document.getElementById('other-formats-header');
   const otherFormats = Object.keys(imageFormatsCount).filter(format => format !== 'webp').map(format => `${format} (${imageFormatsCount[format]})`).join(', ');
-  otherImageFormatsList.textContent = otherFormats;
+
+  if (otherFormats) {
+    otherFormatsHeader.textContent = 'All other formats:';
+    otherImageFormatsList.textContent = otherFormats;
+  } else {
+    otherFormatsHeader.textContent = 'No other img format found';
+    otherImageFormatsList.textContent = '';
+  }
 
   const imagesTable = document.getElementById('images-table').getElementsByTagName('tbody')[0];
   const linksTable = document.getElementById('links-table').getElementsByTagName('tbody')[0];
@@ -252,10 +259,10 @@ function displayData(images = [], links = [], overview = {}) {
     }
 
     anchorCell.addEventListener('click', () => {
-      //console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
+      console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText: link.anchor }, (response) => {
-          //console.log("Response from content script:", response); // Log the response from content script
+          console.log("Response from content script:", response); // Log the response from content script
         });
       });
     });
