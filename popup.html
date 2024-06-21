@@ -50,10 +50,8 @@
           <div class="stat-box">Total Images<br><span id="total-images"></span></div>
           <div class="stat-box">Images with Alt Text<br><span id="total-images-with-alt"></span></div>
           <div class="stat-box">Images without Alt Text<br><span id="total-images-without-alt"></span></div>
-          <div class="stat-box wide">Missing Title<br><span id="missing-title"></span></div>
-          <div class="stat-box wide">Missing Caption<br><span id="missing-caption"></span></div>
-          <div class="stat-box wide highlight">Total .webp Images<br><span id="total-webp-images"></span></div>
-          <div class="stat-box wide highlight">Total Other Format Images<br><span id="total-other-images"></span></div>
+          <div class="stat-box wide highlight">Missing Title<br><span id="missing-title"></span></div>
+          <div class="stat-box wide highlight">Missing Caption<br><span id="missing-caption"></span></div>
         </div>
       </div>
     </div>
@@ -122,7 +120,7 @@
       <div class="overview-section image-overview-section">
         <div class="image-overview-container">
           <div class="image-overview-box image-overview-total">
-            <span class="image-overview-label">Total</span><br><span id="total-images-overview"></span>
+            <span class="image-overview-label">Total | Total webp(s)</span><br><span id="total-images-overview"></span>
           </div>
           <div class="image-overview-box image-overview-missing-title">
             <span class="image-overview-label">Missing Title</span><br><span id="total-missing-title-overview"></span>
@@ -133,6 +131,10 @@
           <div class="image-overview-box image-overview-missing-caption">
             <span class="image-overview-label">Missing Caption</span><br><span id="total-missing-caption-overview"></span>
           </div>
+        </div>
+        <div class="image-overview-container">
+          <div class="section-header">All other formats:</div>
+          <div id="other-image-formats-list" class="formats-list"></div>
         </div>
         <button id="toggle-image-view" class="button">Expand</button>
         <div id="image-view-container" class="image-view-container" style="display: none;">
@@ -148,6 +150,7 @@
           <div id="image-view" class="image-grid"></div>
         </div>
       </div>
+            
 
       <div class="overview-section">
         <div class="section-header">All files</div>

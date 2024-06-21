@@ -127,7 +127,6 @@ function displayOverview(data, action) {
 }
 
 function displayData(images = [], links = [], overview = {}) {
-  // Ensure default values if data is undefined
   const {
     totalImages = 0,
     totalImagesWithAlt = 0,
@@ -143,7 +142,6 @@ function displayData(images = [], links = [], overview = {}) {
     imageFormatsCount = {}
   } = overview;
 
-  // Calculate total .webp images and other format images
   const totalWebpImages = imageFormatsCount['webp'] || 0;
   const totalOtherImages = totalImages - totalWebpImages;
 
@@ -153,8 +151,6 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('total-images-without-alt').textContent = totalImagesWithoutAlt;
   document.getElementById('missing-title').textContent = totalImagesWithoutTitle;
   document.getElementById('missing-caption').textContent = totalImagesWithoutCaption;
-  document.getElementById('total-webp-images').textContent = totalWebpImages;
-  document.getElementById('total-other-images').textContent = totalOtherImages;
 
   document.getElementById('total-urls').textContent = totalUrls;
   document.getElementById('total-duplicated-urls').textContent = totalDuplicatedUrls;
@@ -172,10 +168,16 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('link-total-no-follow-urls').textContent = totalNoFollowUrls;
 
   // Images tab counts
-  document.getElementById('total-images-overview').textContent = totalImages;
+  document.getElementById('total-images-overview').textContent = `${totalImages} | ${totalWebpImages}`;
   document.getElementById('total-missing-title-overview').textContent = totalImagesWithoutTitle;
   document.getElementById('total-missing-alt-overview').textContent = totalImagesWithoutAlt;
   document.getElementById('total-missing-caption-overview').textContent = totalImagesWithoutCaption;
+
+  // Populate other image formats list
+  const otherImageFormatsList = document.getElementById('other-image-formats-list');
+  otherImageFormatsList.innerHTML = '';
+  const otherFormats = Object.keys(imageFormatsCount).filter(format => format !== 'webp').map(format => `${format} (${imageFormatsCount[format]})`).join(', ');
+  otherImageFormatsList.textContent = otherFormats;
 
   const imagesTable = document.getElementById('images-table').getElementsByTagName('tbody')[0];
   const linksTable = document.getElementById('links-table').getElementsByTagName('tbody')[0];

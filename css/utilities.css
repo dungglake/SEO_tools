@@ -66,3 +66,18 @@ img.thumbnail {
     margin-right: 10px;
     border: 1px solid #ddd;
 }
+
+.section-header {
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px; 
+    font-weight: bold;
+    display: inline;
+}
+  
+.formats-list {
+    display: inline;
+    margin-left: 10px;
+    font-size: 14px; 
+}
