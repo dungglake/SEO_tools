@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Error in images and links response:', response ? response.error : 'No response');
         }
       });
+
+      fetchAndDisplayHeadings(); // Call to fetch and display headings
     } else {
       messageElement.style.display = 'block';
       tabContainer.style.display = 'none';
@@ -361,4 +363,37 @@ function updateGridLayout(columns) {
   const imageView = document.getElementById('image-view');
   imageView.className = 'image-grid'; // Reset class name to base
   imageView.classList.add(`grid-${columns}`);
+}
+
+function fetchAndDisplayHeadings() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { action: 'getHeadings' }, (headings) => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        return;
+      }
+      if (headings && headings.length > 0) {
+        const headingsList = document.getElementById('headings-list');
+
+        headingsList.innerHTML = ''; // Clear previous content
+
+        headings.forEach((heading, index) => {
+          const listItem = document.createElement('li');
+          const headingElement = document.createElement(heading.type.toLowerCase());
+          headingElement.textContent = `${heading.type}: ${heading.content}`;
+          headingElement.style.cursor = 'pointer';
+          headingElement.addEventListener('click', () => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+              chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToPosition', position: heading.position });
+            });
+          });
+
+          listItem.appendChild(headingElement);
+          headingsList.appendChild(listItem);
+        });
+      } else {
+        console.error('No headings found.');
+      }
+    });
+  });
 }

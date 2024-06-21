@@ -312,6 +312,15 @@ function scrollToImage(imageUrl) {
   });
 }
 
+function extractHeadings() {
+  const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4')).map(heading => ({
+    type: heading.tagName,
+    content: heading.textContent.trim(),
+    position: heading.getBoundingClientRect().top + window.pageYOffset
+  }));
+  return headings;
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   //console.log("Received request:", request);
 
@@ -337,6 +346,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.action === 'resetHighlights') {
       resetHighlights();
       sendResponse({ status: 'done' });
+    } else if (request.action === 'getHeadings') {
+      const headings = extractHeadings();
+      sendResponse(headings);
     } else {
       sendResponse({ error: "Unknown action" });
     }
