@@ -117,13 +117,29 @@ function displayOverview(data, action) {
     thumbnailElement.style.display = 'block';
   }
 
-  document.getElementById('meta-title').textContent = data.metaTitle || '';
-  document.getElementById('meta-description').textContent = data.metaDescription || '';
+  const metaTitleText = data.metaTitle || '';
+  const metaDescriptionText = data.metaDescription || '';
+
+  document.getElementById('meta-title').textContent = `${metaTitleText} (${data.metaTitleCount} chars)`;
+  document.getElementById('meta-description').textContent = `${metaDescriptionText} (${data.metaDescriptionCount} chars)`;
+
   const thumbnail = document.getElementById('thumbnail');
   thumbnail.src = data.thumbnail || '';
   thumbnail.alt = data.thumbnailAlt || '';
   document.getElementById('thumbnail-alt').textContent = data.thumbnailAlt || '';
   document.getElementById('word-count').textContent = `${data.wordCount}`;
+
+  if (data.metaTitleCount >= 50 && data.metaTitleCount <= 65) {
+    document.getElementById('meta-title').style.color = 'green';
+  } else {
+    document.getElementById('meta-title').style.color = 'red';
+  }
+
+  if (data.metaDescriptionCount >= 120 && data.metaDescriptionCount <= 160) {
+    document.getElementById('meta-description').style.color = 'green';
+  } else {
+    document.getElementById('meta-description').style.color = 'red';
+  }
 }
 
 function displayData(images = [], links = [], overview = {}) {

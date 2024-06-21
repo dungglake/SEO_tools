@@ -17,8 +17,11 @@ function getContentOverview() {
 
   const metaTitleElement = document.querySelector('.edit-post-visual-editor__post-title-wrapper');
   const metaTitle = metaTitleElement ? metaTitleElement.innerText : document.querySelector('title') ? document.querySelector('title').innerText : '';
+  const metaTitleCount = metaTitle.length;
 
   const metaDescription = document.querySelector('meta[name="description"]') ? document.querySelector('meta[name="description"]').getAttribute('content') : '';
+  const metaDescriptionCount = metaDescription.length;
+
   const thumbnail = document.querySelector('meta[property="og:image"]') ? document.querySelector('meta[property="og:image"]').getAttribute('content') : '';
   const thumbnailAlt = document.querySelector(`img[src="${thumbnail}"]`) ? document.querySelector(`img[src="${thumbnail}"]`).alt : '';
 
@@ -53,9 +56,6 @@ function getContentOverview() {
       otherContentWordCount = counter.words;
     });
 
-    //console.log("Other content word count (edit mode):", otherContentWordCount);
-    //console.log("FAQ word count (edit mode):", faqWordCount);
-
     totalWordCount = faqWordCount + otherContentWordCount;
 
   } else {
@@ -78,9 +78,6 @@ function getContentOverview() {
         otherContentWordCount = counter.words;
       });
 
-      //console.log("Other content word count (view mode):", otherContentWordCount);
-      //console.log("FAQ word count (view mode):", faqWordCount);
-
       totalWordCount = faqWordCount + otherContentWordCount;
 
     } else {
@@ -89,8 +86,6 @@ function getContentOverview() {
       });
     }
   }
-
-  //console.log("Total word count:", totalWordCount);
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const wordCountElement = document.getElementById('word-count');
@@ -102,6 +97,8 @@ function getContentOverview() {
   return {
     metaTitle,
     metaDescription,
+    metaTitleCount,
+    metaDescriptionCount,
     thumbnail,
     thumbnailAlt,
     wordCount: `${totalWordCount} words`
