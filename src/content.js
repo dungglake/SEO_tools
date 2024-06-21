@@ -4,6 +4,19 @@ let highlightedElement = null;
 let currentDuplicateIndex = -1;
 const duplicateLinks = [];
 
+// Function to inject CSS dynamically
+function injectCSS() {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = chrome.runtime.getURL('css/styles.css');
+  link.onload = () => console.log('CSS loaded successfully');
+  link.onerror = (e) => console.error('Error loading CSS', e);
+  document.head.appendChild(link);
+}
+
+injectCSS();
+
 function getContentOverview() {
   console.log("Fetching content overview...");
 
@@ -110,9 +123,13 @@ function getContentArea() {
   const url = window.location.href;
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
-    return document.querySelector('.wp-block-post-content');
+    const contentArea = document.querySelector('.wp-block-post-content');
+    console.log("Content area for edit mode:", contentArea);
+    return contentArea;
   } else {
-    return document.querySelector('#vnx_post_content');
+    const contentArea = document.querySelector('#vnx_post_content');
+    console.log("Content area for view mode:", contentArea);
+    return contentArea;
   }
 }
 
@@ -222,20 +239,40 @@ function getImagesAndLinks() {
 }
 
 function highlightAnchor(anchorText) {
-  console.log("Highlighting anchor:", anchorText);
+  console.log("highlightAnchor function called with anchorText:", anchorText);
+
   if (highlightedElement) {
-    highlightedElement.style.backgroundColor = '';
+    console.log("Clearing previous highlight:", highlightedElement);
+    highlightedElement.classList.remove('highlighted'); // Clear previous highlight
     highlightedElement = null;
   }
 
-  const elements = document.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
+  const contentArea = getContentArea();
+  if (!contentArea) {
+    console.error("Content area not found.");
+    return;
+  }
+
+  const elements = contentArea.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
+  console.log("Total elements found in content area:", elements.length);
+
+  let found = false; // Flag to check if any element is found and highlighted
   elements.forEach(el => {
     if (el.textContent.trim() === anchorText.trim()) {
-      el.style.backgroundColor = 'lightyellow';
+      console.log("Match found. Highlighting element:", el);
+      el.classList.add('highlighted'); // Set new highlight
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       highlightedElement = el;
+      found = true;
     }
   });
+
+  // Log if the element was found and highlighted
+  if (found) {
+    console.log("Element highlighted:", highlightedElement);
+  } else {
+    console.log("No matching element found for anchor text:", anchorText);
+  }
 }
 
 function findNextDuplicate() {

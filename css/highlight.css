@@ -1,0 +1,6 @@
+a.highlighted, span.highlighted, div.highlighted, p.highlighted, h1.highlighted, h2.highlighted, h3.highlighted, h4.highlighted, h5.highlighted, h6.highlighted {
+    background-color: yellowgreen !important;
+    padding: 2px !important;
+    border: 2px solid yellow !important;
+    color: black !important;
+  }

@@ -9,8 +9,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": {
-    }
+    "default_icon": {}
   },
   "content_scripts": [
     {
@@ -20,7 +19,18 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["images/logo.png"],
+      "resources": [
+        "images/logo.png",
+        "css/styles.css",
+        "css/base.css",
+        "css/tabs.css",
+        "css/overview.css",
+        "css/tables.css",
+        "css/footer.css",
+        "css/image-view.css",
+        "css/utilities.css",
+        "css/highlight.css"
+      ],
       "matches": ["*://*.vietnix.vn/*"]
     }
   ]

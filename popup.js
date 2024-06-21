@@ -78,6 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set default grid layout to 4 columns
   document.getElementById('grid-select').value = '4';
   updateGridLayout('4');
+
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', (event) => {
+      const anchorText = link.textContent.trim();
+      console.log("Anchor clicked:", anchorText); // Log when anchor is clicked
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText }, (response) => {
+          console.log("Response from content script:", response); // Log the response from content script
+        });
+      });
+    });
+  });
+  
 });
 
 function displayOverview(data, action) {
@@ -214,7 +227,7 @@ function displayData(images = [], links = [], overview = {}) {
 
     numberCell.textContent = link.link_id;
     anchorCell.textContent = link.anchor;
-    anchorCell.style.cursor = 'pointer'; // Make anchor cell look clickable
+    anchorCell.style.cursor = 'pointer';
 
     if (link.is_duplicated) {
       const findNextButton = document.createElement('button');
@@ -229,8 +242,11 @@ function displayData(images = [], links = [], overview = {}) {
     }
 
     anchorCell.addEventListener('click', () => {
+      console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToAnchor', anchorText: link.anchor });
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText: link.anchor }, (response) => {
+          console.log("Response from content script:", response); // Log the response from content script
+        });
       });
     });
 
