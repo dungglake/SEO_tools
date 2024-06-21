@@ -82,10 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (event) => {
       const anchorText = link.textContent.trim();
-      //console.log("Anchor clicked:", anchorText); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText }, (response) => {
-          //console.log("Response from content script:", response); // Log the response from content script
+          // Log the response from content script
         });
       });
     });
@@ -100,6 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  const toggleDetailsButton = document.getElementById('toggle-details-button');
+  const detailsContainer = document.getElementById('details-container');
+
+  toggleDetailsButton.addEventListener('click', () => {
+    if (detailsContainer.style.display === 'none') {
+      detailsContainer.style.display = 'block';
+      toggleDetailsButton.textContent = 'Hide details';
+    } else {
+      detailsContainer.style.display = 'none';
+      toggleDetailsButton.textContent = 'More details';
+    }
+  });
 });
 
 function displayOverview(data, action) {
@@ -120,25 +132,53 @@ function displayOverview(data, action) {
   const metaTitleText = data.metaTitle || '';
   const metaDescriptionText = data.metaDescription || '';
 
-  document.getElementById('meta-title').textContent = `${metaTitleText} (${data.metaTitleCount} chars)`;
-  document.getElementById('meta-description').textContent = `${metaDescriptionText} (${data.metaDescriptionCount} chars)`;
-
+  const metaTitleElementContent = document.getElementById('meta-title');
+  const metaDescriptionElementContent = document.getElementById('meta-description');
+  const wordCountElement = document.getElementById('word-count');
   const thumbnail = document.getElementById('thumbnail');
-  thumbnail.src = data.thumbnail || '';
-  thumbnail.alt = data.thumbnailAlt || '';
-  document.getElementById('thumbnail-alt').textContent = data.thumbnailAlt || '';
-  document.getElementById('word-count').textContent = `${data.wordCount}`;
+  const thumbnailAltElement = document.getElementById('thumbnail-alt');
+  const thumbnailFilenameElement = document.getElementById('thumbnail-filename');
+  const thumbnailAltTextElement = document.getElementById('thumbnail-alt-text');
 
-  if (data.metaTitleCount >= 50 && data.metaTitleCount <= 65) {
-    document.getElementById('meta-title').style.color = 'green';
-  } else {
-    document.getElementById('meta-title').style.color = 'red';
+  if (metaTitleElementContent) {
+    metaTitleElementContent.textContent = `${metaTitleText} (${data.metaTitleCount} chars)`;
+    if (data.metaTitleCount >= 50 && data.metaTitleCount <= 65) {
+      metaTitleElementContent.style.color = 'green';
+    } else {
+      metaTitleElementContent.style.color = 'red';
+    }
   }
 
-  if (data.metaDescriptionCount >= 120 && data.metaDescriptionCount <= 160) {
-    document.getElementById('meta-description').style.color = 'green';
-  } else {
-    document.getElementById('meta-description').style.color = 'red';
+  if (metaDescriptionElementContent) {
+    metaDescriptionElementContent.textContent = `${metaDescriptionText} (${data.metaDescriptionCount} chars)`;
+    if (data.metaDescriptionCount >= 120 && data.metaDescriptionCount <= 160) {
+      metaDescriptionElementContent.style.color = 'green';
+    } else {
+      metaDescriptionElementContent.style.color = 'red';
+    }
+  }
+
+  if (wordCountElement) {
+    wordCountElement.textContent = `${data.wordCount}`;
+  }
+
+  if (thumbnail) {
+    thumbnail.src = data.thumbnail || '';
+    thumbnail.alt = data.thumbnailAlt || '';
+  }
+
+  console.log("Thumbnail Alt in popup:", data.thumbnailAlt);
+
+  if (thumbnailAltElement) {
+    thumbnailAltElement.textContent = data.thumbnailAlt || '';
+  }
+
+  if (thumbnailFilenameElement) {
+    thumbnailFilenameElement.innerHTML = `<a href="${data.thumbnail}" target="_blank">${data.thumbnail.split('/').pop()}</a>`;
+  }
+
+  if (thumbnailAltTextElement) {
+    thumbnailAltTextElement.textContent = data.thumbnailAlt || '';
   }
 }
 
@@ -194,109 +234,122 @@ function displayData(images = [], links = [], overview = {}) {
   const otherFormatsHeader = document.getElementById('other-formats-header');
   const otherFormats = Object.keys(imageFormatsCount).filter(format => format !== 'webp').map(format => `${format} (${imageFormatsCount[format]})`).join(', ');
 
-  if (otherFormats) {
-    otherFormatsHeader.textContent = 'All other formats:';
-    otherImageFormatsList.textContent = otherFormats;
-  } else {
-    otherFormatsHeader.textContent = 'No other img format found';
-    otherImageFormatsList.textContent = '';
+  if (otherFormatsHeader && otherImageFormatsList) {
+    if (otherFormats) {
+      otherFormatsHeader.textContent = 'All other formats:';
+      otherImageFormatsList.textContent = otherFormats;
+    } else {
+      otherFormatsHeader.textContent = 'No other img format found';
+      otherImageFormatsList.textContent = '';
+    }
   }
 
   const imagesTable = document.getElementById('images-table').getElementsByTagName('tbody')[0];
   const linksTable = document.getElementById('links-table').getElementsByTagName('tbody')[0];
   const imageView = document.getElementById('image-view');
 
-  imagesTable.innerHTML = '';
-  linksTable.innerHTML = '';
-  imageView.innerHTML = '';
+  if (imagesTable) {
+    imagesTable.innerHTML = '';
+  }
+  if (linksTable) {
+    linksTable.innerHTML = '';
+  }
+  if (imageView) {
+    imageView.innerHTML = '';
+  }
 
   images.forEach(image => {
-    const row = imagesTable.insertRow();
-    const numberCell = row.insertCell(0);
-    const altCell = row.insertCell(1);
-    const captionCell = row.insertCell(2);
-    const imageCell = row.insertCell(3);
-    const formatCell = row.insertCell(4);
+    if (imagesTable) {
+      const row = imagesTable.insertRow();
+      const numberCell = row.insertCell(0);
+      const altCell = row.insertCell(1);
+      const captionCell = row.insertCell(2);
+      const imageCell = row.insertCell(3);
+      const formatCell = row.insertCell(4);
 
-    numberCell.textContent = image.id;
-    altCell.textContent = image.alt_text;
-    captionCell.textContent = image.caption;
-    formatCell.textContent = image.format;
+      numberCell.textContent = image.id;
+      altCell.textContent = image.alt_text;
+      captionCell.textContent = image.caption;
+      formatCell.textContent = image.format;
 
-    const img = document.createElement('img');
-    img.src = image.url;
-    img.alt = image.alt_text;
-    img.classList.add('thumbnail');
-    imageCell.appendChild(img);
-    const fileNameLink = document.createElement('a');
-    fileNameLink.href = image.url;
-    fileNameLink.target = '_blank';
-    fileNameLink.textContent = image.name;
-    imageCell.appendChild(fileNameLink);
+      const img = document.createElement('img');
+      img.src = image.url;
+      img.alt = image.alt_text;
+      img.classList.add('thumbnail');
+      imageCell.appendChild(img);
+      const fileNameLink = document.createElement('a');
+      fileNameLink.href = image.url;
+      fileNameLink.target = '_blank';
+      fileNameLink.textContent = image.name;
+      imageCell.appendChild(fileNameLink);
 
-    row.addEventListener('click', () => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToImage', imageUrl: image.url });
+      row.addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToImage', imageUrl: image.url });
+        });
       });
-    });
 
-    const imgElement = document.createElement('div');
-    imgElement.classList.add('image-container');
-    const imgTag = document.createElement('img');
-    imgTag.src = image.url;
-    imgTag.alt = image.alt_text;
-    imgTag.classList.add('thumbnail');
-    const imgInfo = document.createElement('div');
-    imgInfo.classList.add('image-info');
-    imgInfo.textContent = `${image.id}. ${image.name}`;
-    imgElement.appendChild(imgTag);
-    imgElement.appendChild(imgInfo);
-    imgElement.addEventListener('click', () => {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToImage', imageUrl: image.url });
+      const imgElement = document.createElement('div');
+      imgElement.classList.add('image-container');
+      const imgTag = document.createElement('img');
+      imgTag.src = image.url;
+      imgTag.alt = image.alt_text;
+      imgTag.classList.add('thumbnail');
+      const imgInfo = document.createElement('div');
+      imgInfo.classList.add('image-info');
+      imgInfo.textContent = `${image.id}. ${image.name}`;
+      imgElement.appendChild(imgTag);
+      imgElement.appendChild(imgInfo);
+      imgElement.addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToImage', imageUrl: image.url });
+        });
       });
-    });
-    imageView.appendChild(imgElement);
+      if (imageView) {
+        imageView.appendChild(imgElement);
+      }
+    }
   });
 
   links.forEach(link => {
-    const row = linksTable.insertRow();
-    const numberCell = row.insertCell(0);
-    const anchorCell = row.insertCell(1);
-    const urlCell = row.insertCell(2);
+    if (linksTable) {
+      const row = linksTable.insertRow();
+      const numberCell = row.insertCell(0);
+      const anchorCell = row.insertCell(1);
+      const urlCell = row.insertCell(2);
 
-    numberCell.textContent = link.link_id;
-    anchorCell.textContent = link.anchor;
-    anchorCell.style.cursor = 'pointer';
+      numberCell.textContent = link.link_id;
+      anchorCell.textContent = link.anchor;
+      anchorCell.style.cursor = 'pointer';
 
-    if (!link.is_nofollow) {
-      anchorCell.style.fontWeight = 'bold';
-      anchorCell.style.color = 'green';
-    }
+      if (!link.is_nofollow) {
+        anchorCell.style.fontWeight = 'bold';
+        anchorCell.style.color = 'green';
+      }
 
-    anchorCell.addEventListener('click', () => {
-      console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText: link.anchor }, (response) => {
-          console.log("Response from content script:", response); // Log the response from content script
+      anchorCell.addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'highlightAnchor', anchorText: link.anchor }, (response) => {
+            // Log the response from content script
+          });
         });
       });
-    });
 
-    const urlLink = document.createElement('a');
-    urlLink.href = link.url;
-    urlLink.target = '_blank';
-    urlLink.textContent = link.url;
-    urlCell.appendChild(urlLink);
+      const urlLink = document.createElement('a');
+      urlLink.href = link.url;
+      urlLink.target = '_blank';
+      urlLink.textContent = link.url;
+      urlCell.appendChild(urlLink);
 
-    if (link.is_duplicated) {
-      urlCell.style.backgroundColor = '#FFFF00'; // Yellow
-    }
-    if (link.is_external) {
-      numberCell.style.backgroundColor = '#D9EAD3'; // Green
-    }
-    if (link.is_new_tab) {
-      anchorCell.style.backgroundColor = '#F4CCCC'; // Red
+      if (link.is_duplicated) {
+        urlCell.style.backgroundColor = '#FFFF00'; // Yellow
+      }
+      if (link.is_external) {
+        numberCell.style.backgroundColor = '#D9EAD3'; // Green
+      }
+      if (link.is_new_tab) {
+        anchorCell.style.backgroundColor = '#F4CCCC'; // Red
+      }
     }
   });
 

@@ -24,12 +24,29 @@
         <div id="meta-description-wrapper">
           <p><strong>Meta Description:</strong> <span id="meta-description"></span></p>
         </div>
-        <div id="thumbnail-wrapper">
-          <p><strong>Thumbnail:</strong></p>
-          <img id="thumbnail" class="thumbnail" src="" alt="" />
-          <p><span id="thumbnail-alt"></span></p>
-        </div>
         <p><strong>Word Count:</strong> <span id="word-count"></span></p>
+        
+        <button id="toggle-details-button" class="button">More details</button>
+        <div id="details-container" style="display: none;">
+          <div id="thumbnail-wrapper">
+            <h2><strong>Thumbnail:</strong></h2>
+            <img id="thumbnail" class="thumbnail" src="" alt="" />
+          </div>
+          <table id="thumbnail-details">
+            <thead>
+              <tr>
+                <th>Filename</th>
+                <th>Alt Text</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="thumbnail-filename"></td>
+                <td id="thumbnail-alt-text"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="overview-section link-overview-section">

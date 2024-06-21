@@ -23,7 +23,10 @@ function getContentOverview() {
   const metaDescriptionCount = metaDescription.length;
 
   const thumbnail = document.querySelector('meta[property="og:image"]') ? document.querySelector('meta[property="og:image"]').getAttribute('content') : '';
-  const thumbnailAlt = document.querySelector(`img[src="${thumbnail}"]`) ? document.querySelector(`img[src="${thumbnail}"]`).alt : '';
+  console.log("Thumbnail URL:", thumbnail);
+
+  const thumbnailAlt = document.querySelector('meta[property="og:image:alt"]') ? document.querySelector('meta[property="og:image:alt"]').getAttribute('content') : '';
+  console.log("Thumbnail Alt:", thumbnailAlt);
 
   const contentArea = getContentArea();
   if (!contentArea) {
