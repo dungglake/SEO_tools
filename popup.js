@@ -143,12 +143,18 @@ function displayData(images = [], links = [], overview = {}) {
     imageFormatsCount = {}
   } = overview;
 
+  // Calculate total .webp images and other format images
+  const totalWebpImages = imageFormatsCount['webp'] || 0;
+  const totalOtherImages = totalImages - totalWebpImages;
+
   // Overview tab counts
   document.getElementById('total-images').textContent = totalImages;
   document.getElementById('total-images-with-alt').textContent = totalImagesWithAlt;
   document.getElementById('total-images-without-alt').textContent = totalImagesWithoutAlt;
   document.getElementById('missing-title').textContent = totalImagesWithoutTitle;
   document.getElementById('missing-caption').textContent = totalImagesWithoutCaption;
+  document.getElementById('total-webp-images').textContent = totalWebpImages;
+  document.getElementById('total-other-images').textContent = totalOtherImages;
 
   document.getElementById('total-urls').textContent = totalUrls;
   document.getElementById('total-duplicated-urls').textContent = totalDuplicatedUrls;
@@ -269,19 +275,9 @@ function displayData(images = [], links = [], overview = {}) {
     }
   });
 
-  const imageFormatsList = document.getElementById('image-formats-list');
-  imageFormatsList.innerHTML = '';
-
-  for (const [format, count] of Object.entries(imageFormatsCount)) {
-    const listItem = document.createElement('li');
-    listItem.textContent = `${format}: ${count}`;
-    imageFormatsList.appendChild(listItem);
-  }
-
   // Display images in the image grid
   updateGridLayout(document.getElementById('grid-select').value);
 }
-
 
 function updateGridLayout(columns) {
   const imageView = document.getElementById('image-view');

@@ -37,6 +37,11 @@ img.thumbnail {
     width: calc(50% - 10px);
 }
 
+.stat-box.highlight {
+    background-color: lightblue;
+    font-weight: bold;
+  }
+
 .image-formats-section {
     margin-top: 20px;
 }
