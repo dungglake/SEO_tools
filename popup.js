@@ -238,6 +238,11 @@ function displayData(images = [], links = [], overview = {}) {
     anchorCell.textContent = link.anchor;
     anchorCell.style.cursor = 'pointer';
 
+    if (!link.is_nofollow) {
+      anchorCell.style.fontWeight = 'bold';
+      anchorCell.style.color = 'green';
+    }
+
     anchorCell.addEventListener('click', () => {
       console.log("Anchor clicked:", link.anchor); // Log when anchor is clicked
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -276,6 +281,7 @@ function displayData(images = [], links = [], overview = {}) {
   // Display images in the image grid
   updateGridLayout(document.getElementById('grid-select').value);
 }
+
 
 function updateGridLayout(columns) {
   const imageView = document.getElementById('image-view');
