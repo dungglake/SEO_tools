@@ -321,9 +321,12 @@ function extractHeadings() {
   return headings;
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  //console.log("Received request:", request);
+function scrollToPosition(position) {
+  const offset = 100; 
+  window.scrollTo({ top: position - offset, behavior: 'smooth' });
+}
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
     if (request.action === 'getContentOverview' || request.action === 'getContentOverviewFromCreate' || request.action === 'getContentOverviewFromEdit') {
       const result = getContentOverview();
@@ -349,6 +352,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.action === 'getHeadings') {
       const headings = extractHeadings();
       sendResponse(headings);
+    } else if (request.action === 'scrollToPosition') {
+      scrollToPosition(request.position);
+      sendResponse({ status: 'done' });
     } else {
       sendResponse({ error: "Unknown action" });
     }
