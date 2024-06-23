@@ -382,6 +382,7 @@ function fetchAndDisplayHeadings() {
           const headingElement = document.createElement(heading.type.toLowerCase());
           headingElement.textContent = `${heading.type}: ${heading.content}`;
           headingElement.style.cursor = 'pointer';
+          headingElement.classList.add('heading-item'); 
           headingElement.addEventListener('click', () => {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToPosition', position: heading.position });

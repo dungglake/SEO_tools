@@ -23,3 +23,7 @@ h4 {
     font-size: 14px; 
     margin-left: 30px; 
 }
+
+#headings-list {
+    list-style-type: none;
+}
