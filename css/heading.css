@@ -27,3 +27,15 @@ h4 {
 #headings-list {
     list-style-type: none;
 }
+
+/* hovers */
+.heading-item {
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s, font-weight 0.3s;
+}
+  
+.heading-item:hover {
+    background-color: lightblue;
+    font-weight: bold;
+}
