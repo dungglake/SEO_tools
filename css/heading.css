@@ -36,6 +36,6 @@ h4 {
 }
   
 .heading-item:hover {
-    background-color: lightblue;
+    background-color: rgb(209, 238, 248);
     font-weight: bold;
 }

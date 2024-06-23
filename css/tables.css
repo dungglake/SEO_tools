@@ -16,7 +16,7 @@ th, td {
 }
 
 th {
-    background-color: lightblue; /* Light blue background for heading row */
+    background-color: rgb(198, 236, 248); /* Light blue background for heading row */
 }
 
 tbody tr:nth-child(odd) {
@@ -24,5 +24,5 @@ tbody tr:nth-child(odd) {
 }
 
 tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Slightly darker background color for even rows */
+    background-color: #c1bebec3; /* Slightly darker background color for even rows */
 }

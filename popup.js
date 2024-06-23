@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       tab.classList.add('active');
       document.getElementById(tab.dataset.tab).classList.add('active');
+
+      // Scroll to the top of the tab content
+      document.getElementById(tab.dataset.tab).scrollTop = 0;
     });
   });
 
@@ -382,7 +385,8 @@ function fetchAndDisplayHeadings() {
           const headingElement = document.createElement(heading.type.toLowerCase());
           headingElement.textContent = `${heading.type}: ${heading.content}`;
           headingElement.style.cursor = 'pointer';
-          headingElement.classList.add('heading-item'); 
+          headingElement.classList.add('heading-item'); // Add class for styling
+
           headingElement.addEventListener('click', () => {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
               chrome.tabs.sendMessage(tabs[0].id, { action: 'scrollToPosition', position: heading.position });

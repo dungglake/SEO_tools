@@ -2,7 +2,7 @@
     display: block;
     margin: 10px auto;
     padding: 10px 20px;
-    background-color: #0b72b9;
+    background-color: #89c0e5;
     color: white;
     border: none;
     border-radius: 5px;
@@ -13,7 +13,7 @@
   }
   
   .toggle-button:hover {
-    background-color: #085a87;
+    background-color: #1a82ba;
   }
   
   .grid-select-container {
