@@ -113,22 +113,36 @@ function getContentArea() {
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
     const contentArea = document.querySelector('.wp-block-post-content');
-    //console.log("Content area for edit mode:", contentArea);
     return contentArea;
   } else {
     const contentArea = document.querySelector('#vnx_post_content');
-    ///console.log("Content area for view mode:", contentArea);
     return contentArea;
   }
 }
 
-function getImagesAndLinks() {
+async function checkLinkStatus(url) {
+  //console.log(`Checking status for URL: ${url}`); 
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      mode: 'cors'
+    });
+    //console.log(`URL: ${url}, Status: ${response.status}`);
+    return response.status === 404;
+  } catch (error) {
+    console.error(`Error checking link status for ${url}:`, error);
+    return false;
+  }
+}
+
+async function getImagesAndLinks(sendResponse) {
   console.log("Fetching images and links...");
 
   const contentArea = getContentArea();
   if (!contentArea) {
     console.error("Content area not found.");
-    return { images: [], links: [] };
+    sendResponse({ images: [], links: [], error: "Content area not found." });
+    return;
   }
 
   let imageIdCounter = 1;
@@ -141,6 +155,7 @@ function getImagesAndLinks() {
   let totalImagesWithoutTitle = 0;
   let totalImagesWithCaption = 0;
   let totalImagesWithoutCaption = 0;
+  let total404Urls = 0; // Add this variable to count 404 URLs
 
   const images = Array.from(contentArea.querySelectorAll('img')).filter(img => {
     const format = img.src.split('.').pop().toLowerCase();
@@ -185,11 +200,20 @@ function getImagesAndLinks() {
     };
   });
 
-  const links = Array.from(contentArea.querySelectorAll('a')).map(link => {
+  //console.log("Processing links...");
+  const links = await Promise.all(Array.from(contentArea.querySelectorAll('a')).map(async (link) => {
+    //console.log(`Processing link: ${link.href}`); 
     const is_duplicated = Array.from(contentArea.querySelectorAll('a')).filter(l => l.href === link.href).length > 1;
     if (is_duplicated) {
       duplicateLinks.push(link);
     }
+
+    const is_404 = await checkLinkStatus(link.href);
+    //console.log(`Link: ${link.href}, is_404: ${is_404}`); 
+    if (is_404) {
+      total404Urls++;
+    }
+
     return {
       link_id: linkIdCounter++,
       anchor: link.textContent || '',
@@ -197,9 +221,10 @@ function getImagesAndLinks() {
       is_external: link.hostname !== location.hostname,
       is_nofollow: link.rel.includes('nofollow'),
       is_new_tab: link.target === '_blank',
-      is_duplicated: is_duplicated
+      is_duplicated: is_duplicated,
+      is_404: is_404
     };
-  });
+  }));
 
   const totalUrls = links.length;
   const totalDuplicatedUrls = links.length - new Set(links.map(link => link.url)).size;
@@ -225,16 +250,14 @@ function getImagesAndLinks() {
       totalNewTabUrls,
       totalInternalLinks,
       totalExternalLinks,
-      totalNoFollowUrls
+      totalNoFollowUrls,
+      total404Urls
     }
   };
 }
 
 function highlightAnchor(anchorText) {
-  //console.log("highlightAnchor function called with anchorText:", anchorText);
-
   if (highlightedElement) {
-    //console.log("Clearing previous highlight:", highlightedElement);
     highlightedElement.classList.remove('highlighted'); // Clear previous highlight
     highlightedElement = null;
   }
@@ -246,16 +269,12 @@ function highlightAnchor(anchorText) {
   }
 
   const elements = contentArea.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
-  //console.log("Total elements found in content area:", elements.length);
 
   let found = false; // Flag to check if any element is found and highlighted
   elements.forEach(el => {
-    //console.log("Checking element:", el, "with text:", el.textContent.trim());
     if (el.textContent.trim() === anchorText.trim()) {
-      //console.log("Match found. Highlighting element:", el);
       el.classList.add('highlighted'); // Set new highlight
       setTimeout(() => {
-        //console.log("Scrolling to element:", el);
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100); // Allow other events to process
       highlightedElement = el;
@@ -265,8 +284,6 @@ function highlightAnchor(anchorText) {
 }
 
 function resetHighlights() {
-  //console.log("Resetting highlights");
-
   const highlightedElements = document.querySelectorAll('.highlighted');
   highlightedElements.forEach(el => {
     el.classList.remove('highlighted');
@@ -277,8 +294,6 @@ function resetHighlights() {
 }
 
 function highlightAllDuplicates() {
-  //console.log("Highlighting all duplicate links");
-
   duplicateLinks.forEach(link => {
     link.classList.add('highlighted');
   });
@@ -332,8 +347,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const result = getContentOverview();
       sendResponse(result);
     } else if (request.action === 'getImagesAndLinks') {
-      const result = getImagesAndLinks();
-      sendResponse(result);
+      getImagesAndLinks().then(result => {
+        sendResponse(result);
+      }).catch(error => {
+        sendResponse({ error: error.message });
+      });
     } else if (request.action === 'highlightAnchor') {
       highlightAnchor(request.anchorText);
       sendResponse({ status: 'done' });
@@ -363,5 +381,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ error: error.message });
   }
 
-  return true;
+  return true; // Thêm dòng này để giữ cổng mở cho phản hồi không đồng bộ
 });
+

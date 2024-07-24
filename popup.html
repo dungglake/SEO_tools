@@ -62,6 +62,7 @@
           <div class="stat-box">Total Internal Link<br><span id="total-internal-links"></span></div>
           <div class="stat-box">Total External Link<br><span id="total-external-links"></span></div>
           <div class="stat-box">Total URL No-follow<br><span id="total-no-follow-urls"></span></div>
+          <div class="stat-box center">Total 404 URL<br><span id="total-404-urls"></span></div>
         </div>
       </div>
 
@@ -98,6 +99,9 @@
           <div class="link-overview-box link-overview-no-follow">
             <span class="link-overview-label">Nofollow</span><br><span id="link-total-no-follow-urls"></span>
           </div>
+          <div class="link-overview-box link-overview-404">
+            <span class="link-overview-label">404 URL</span><br><span id="link-total-404-urls"></span>
+          </div>
         </div>
       </div>
 
@@ -125,12 +129,16 @@
             <span>External URL</span>
           </div>
           <div class="note">
-            <div class="color-box" style="background-color: #F4CCCC;"></div>
+            <div class="color-box" style="background-color: #c4fbfd;"></div>
             <span>Open in New Tab</span>
           </div>
           <div class="note">
             <div class="color-box" style="background-color: green;"></div>
             <span style="font-weight: bold;">Is a do-follow link</span>
+          </div>
+          <div class="note">
+            <div class="color-box" style="background-color: #ffb9b9;"></div>
+            <span style="font-weight: bold;">404 Links</span>
           </div>
         </div>
         <button id="reset-highlights" class="button">Reset Highlights</button>
@@ -194,7 +202,7 @@
 
   <footer>
     <img src="images/logo.png" alt="Vietnix Logo" class="footer-logo">
-    <span>Copyright &copy; 2024 Vietnix JSC. Developed by <a href="https://github.com/eugeneChuBNE" target="_blank" style="color: lightblue;">Eugene Chu</a></span>
+    <span>Copyright &copy; 2024 Vietnix JSC. All Rights Reserved.</span>
   </footer>
 
   <script src="popup.js"></script>

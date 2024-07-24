@@ -3,7 +3,7 @@
   "name": "SEO Analyser",
   "version": "1.0",
   "description": "Analyse SEO elements of the current page",
-  "permissions": ["activeTab", "tabs"],
+  "permissions": ["activeTab", "tabs", "webRequest", "webRequestBlocking", "http://*/", "https://*/"],
   "background": {
     "service_worker": "background.js"
   },

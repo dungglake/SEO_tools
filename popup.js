@@ -1,4 +1,7 @@
+console.log("popup.js is loaded");
+
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOMContentLoaded event fired");
   const tabs = document.querySelectorAll('.tab');
   const tabContents = document.querySelectorAll('.tab-content');
   const messageElement = document.getElementById('message');
@@ -21,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTabUrl = tabs[0].url;
-
+    console.log('Current Tab URL:', currentTabUrl);
     if (currentTabUrl.includes('vietnix.vn')) {
       messageElement.style.display = 'none';
       tabContainer.style.display = 'block';
@@ -41,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         if (overviewResponse && !overviewResponse.error) {
+          console.log('Overview Response:', overviewResponse);
           displayOverview(overviewResponse, action);
         } else {
           console.error('Error in content overview response:', overviewResponse ? overviewResponse.error : 'No response');
@@ -52,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error(chrome.runtime.lastError.message);
           return;
         }
+        console.log('Response from content script:', response);
         if (response && !response.error) {
           displayData(response.images, response.links, response.overview);
         } else {
@@ -200,6 +205,7 @@ function displayData(images = [], links = [], overview = {}) {
     totalInternalLinks = 0,
     totalExternalLinks = 0,
     totalNoFollowUrls = 0,
+    total404Urls = 0,
     imageFormatsCount = {}
   } = overview;
 
@@ -219,6 +225,7 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('total-internal-links').textContent = totalInternalLinks;
   document.getElementById('total-external-links').textContent = totalExternalLinks;
   document.getElementById('total-no-follow-urls').textContent = totalNoFollowUrls;
+  document.getElementById('total-404-urls').textContent = total404Urls;
 
   // Links tab counts
   document.getElementById('link-total-urls').textContent = totalUrls;
@@ -227,6 +234,7 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('link-total-internal-links').textContent = totalInternalLinks;
   document.getElementById('link-total-external-links').textContent = totalExternalLinks;
   document.getElementById('link-total-no-follow-urls').textContent = totalNoFollowUrls;
+  document.getElementById('link-total-404-urls').textContent = total404Urls;
 
   // Images tab counts
   document.getElementById('total-images-overview').textContent = `${totalImages} | ${totalWebpImages}`;
@@ -353,18 +361,20 @@ function displayData(images = [], links = [], overview = {}) {
         numberCell.style.backgroundColor = '#D9EAD3'; // Green
       }
       if (link.is_new_tab) {
-        anchorCell.style.backgroundColor = '#F4CCCC'; // Red
+        anchorCell.style.backgroundColor = '#c4fbfd'; // Blue
+      }
+      if (link.is_404) {
+        anchorCell.style.backgroundColor = '#ffb9b9'; // Red
       }
     }
   });
 
-  // Display images in the image grid
   updateGridLayout(document.getElementById('grid-select').value);
 }
 
 function updateGridLayout(columns) {
   const imageView = document.getElementById('image-view');
-  imageView.className = 'image-grid'; // Reset class name to base
+  imageView.className = 'image-grid';
   imageView.classList.add(`grid-${columns}`);
 }
 
@@ -378,14 +388,14 @@ function fetchAndDisplayHeadings() {
       if (headings && headings.length > 0) {
         const headingsList = document.getElementById('headings-list');
 
-        headingsList.innerHTML = ''; // Clear previous content
+        headingsList.innerHTML = '';
 
         headings.forEach((heading, index) => {
           const listItem = document.createElement('li');
           const headingElement = document.createElement(heading.type.toLowerCase());
           headingElement.textContent = `${heading.type}: ${heading.content}`;
           headingElement.style.cursor = 'pointer';
-          headingElement.classList.add('heading-item'); // Add class for styling
+          headingElement.classList.add('heading-item');
 
           headingElement.addEventListener('click', () => {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

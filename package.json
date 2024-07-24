@@ -6,5 +6,8 @@
     "countable": "^3.0.1",
     "webpack": "^5.92.0",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "puppeteer": "^22.13.1"
   }
 }
