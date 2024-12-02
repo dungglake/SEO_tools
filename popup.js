@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      fetchAndDisplayHeadings(); // Call to fetch and display headings
+      fetchAndDisplayHeadings();
     } else {
       messageElement.style.display = 'block';
       tabContainer.style.display = 'none';
@@ -205,7 +205,7 @@ function displayData(images = [], links = [], overview = {}) {
     totalInternalLinks = 0,
     totalExternalLinks = 0,
     totalNoFollowUrls = 0,
-    total404Urls = 0,
+    total4xxUrls = 0,
     imageFormatsCount = {}
   } = overview;
 
@@ -225,7 +225,7 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('total-internal-links').textContent = totalInternalLinks;
   document.getElementById('total-external-links').textContent = totalExternalLinks;
   document.getElementById('total-no-follow-urls').textContent = totalNoFollowUrls;
-  document.getElementById('total-404-urls').textContent = total404Urls;
+  document.getElementById('total-4xx-urls').textContent = total4xxUrls;
 
   // Links tab counts
   document.getElementById('link-total-urls').textContent = totalUrls;
@@ -234,7 +234,7 @@ function displayData(images = [], links = [], overview = {}) {
   document.getElementById('link-total-internal-links').textContent = totalInternalLinks;
   document.getElementById('link-total-external-links').textContent = totalExternalLinks;
   document.getElementById('link-total-no-follow-urls').textContent = totalNoFollowUrls;
-  document.getElementById('link-total-404-urls').textContent = total404Urls;
+  document.getElementById('link-total-4xx-urls').textContent = total4xxUrls;
 
   // Images tab counts
   document.getElementById('total-images-overview').textContent = `${totalImages} | ${totalWebpImages}`;
@@ -364,7 +364,9 @@ function displayData(images = [], links = [], overview = {}) {
         anchorCell.style.backgroundColor = '#c4fbfd'; // Blue
       }
       if (link.is_404) {
-        anchorCell.style.backgroundColor = '#ffb9b9'; // Red
+        anchorCell.style.backgroundColor = '#ffb9b9'; 
+      } else if (link.is_403) {
+        anchorCell.style.backgroundColor = '#0084ff';                                                                                           
       }
     }
   });
