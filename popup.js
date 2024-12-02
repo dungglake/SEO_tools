@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 console.log("popup.js is loaded");
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -415,7 +414,7 @@ function fetchAndDisplayHeadings() {
     });
   });
 }
-=======
+
 console.log("popup.js is loaded");
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -832,4 +831,4 @@ function fetchAndDisplayHeadings() {
     });
   });
 }
->>>>>>> 9a4cdafd8369fe2002db072a5135faba53f157d6
+
