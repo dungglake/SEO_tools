@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "manifest_version": 3,
   "name": "SEO Analyser",
@@ -41,3 +42,48 @@
     }
   ]
 }
+=======
+{
+  "manifest_version": 3,
+  "name": "SEO Analyser",
+  "version": "1.0",
+  "description": "Analyse SEO elements of the current page",
+  "permissions": ["activeTab", "tabs", "webRequest", "webRequestBlocking"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "48": "images/vietnixlogo.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "images/vietnixlogo.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.vietnix.vn/*"],
+      "js": ["dist/bundle.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/logo.png",
+        "css/styles.css",
+        "css/base.css",
+        "css/tabs.css",
+        "css/overview.css",
+        "css/tables.css",
+        "css/footer.css",
+        "css/image-view.css",
+        "css/utilities.css",
+        "css/button.css",
+        "css/highlight.css"
+      ],
+      "matches": ["*://*.vietnix.vn/*"]
+    }
+  ]
+}
+>>>>>>> 9a4cdafd8369fe2002db072a5135faba53f157d6
