@@ -3,6 +3,7 @@ import Countable from 'countable';
 let highlightedElement = null;
 const duplicateLinks = [];
 
+// Inject CSS for highlighting
 function injectHighlightCSS() {
   const link = document.createElement('link');
   link.rel = 'stylesheet';
@@ -12,6 +13,7 @@ function injectHighlightCSS() {
 }
 injectHighlightCSS();
 
+// Fetch content overview
 function getContentOverview() {
   console.log("Fetching content overview...");
 
@@ -108,35 +110,41 @@ function getContentOverview() {
   };
 }
 
+// Get content area based on URL
 function getContentArea() {
   const url = window.location.href;
 
   if (url.endsWith("/post-new.php") || url.includes("action=edit")) {
-    const contentArea = document.querySelector('.wp-block-post-content');
-    return contentArea;
+    return document.querySelector('.wp-block-post-content');
   } else {
-    const contentArea = document.querySelector('#vnx_post_content');
-    return contentArea;
+    return document.querySelector('#vnx_post_content');
   }
 }
 
+// Check link status for 404 or 403 errors
 async function checkLinkStatus(url) {
-  //console.log(`Checking status for URL: ${url}`); 
   try {
     const response = await fetch(url, {
       method: 'GET',
-      mode: 'cors'
+      mode: 'cors',
+      credentials: 'include'
     });
-    //console.log(`URL: ${url}, Status: ${response.status}`);
-    return response.status === 404;
+
+    const is_404 = response.status === 404;
+    const is_403 = response.status === 403;
+
+    return { is_404, is_403 };
   } catch (error) {
-    console.error(`Error checking link status for ${url}:`, error);
-    return false;
+    console.error(`Lỗi khi kiểm tra trạng thái link cho ${url}:`, error);
+    return { is_404: false, is_403: false };
   }
 }
 
+// Get images and links with error checks
 async function getImagesAndLinks(sendResponse) {
   console.log("Fetching images and links...");
+
+  let total4xxUrls = 0;
 
   const contentArea = getContentArea();
   if (!contentArea) {
@@ -155,11 +163,10 @@ async function getImagesAndLinks(sendResponse) {
   let totalImagesWithoutTitle = 0;
   let totalImagesWithCaption = 0;
   let totalImagesWithoutCaption = 0;
-  let total404Urls = 0; // Add this variable to count 404 URLs
 
   const images = Array.from(contentArea.querySelectorAll('img')).filter(img => {
     const format = img.src.split('.').pop().toLowerCase();
-    return format !== 'svg'; // Exclude SVG images
+    return format !== 'svg';
   }).map(img => {
     const figure = img.closest('figure');
     const caption = figure ? figure.querySelector('figcaption') : null;
@@ -200,18 +207,16 @@ async function getImagesAndLinks(sendResponse) {
     };
   });
 
-  //console.log("Processing links...");
   const links = await Promise.all(Array.from(contentArea.querySelectorAll('a')).map(async (link) => {
-    //console.log(`Processing link: ${link.href}`); 
     const is_duplicated = Array.from(contentArea.querySelectorAll('a')).filter(l => l.href === link.href).length > 1;
     if (is_duplicated) {
       duplicateLinks.push(link);
     }
 
-    const is_404 = await checkLinkStatus(link.href);
-    //console.log(`Link: ${link.href}, is_404: ${is_404}`); 
-    if (is_404) {
-      total404Urls++;
+    const status = await checkLinkStatus(link.href); 
+
+    if (status.is_404 || status.is_403) {
+      total4xxUrls++; 
     }
 
     return {
@@ -222,7 +227,8 @@ async function getImagesAndLinks(sendResponse) {
       is_nofollow: link.rel.includes('nofollow'),
       is_new_tab: link.target === '_blank',
       is_duplicated: is_duplicated,
-      is_404: is_404
+      is_404: status.is_404,
+      is_403: status.is_403
     };
   }));
 
@@ -233,7 +239,7 @@ async function getImagesAndLinks(sendResponse) {
   const totalExternalLinks = links.filter(link => link.is_external).length;
   const totalNoFollowUrls = links.filter(link => link.is_nofollow).length;
 
-  return {
+  sendResponse({
     images,
     links,
     overview: {
@@ -251,14 +257,15 @@ async function getImagesAndLinks(sendResponse) {
       totalInternalLinks,
       totalExternalLinks,
       totalNoFollowUrls,
-      total404Urls
+      total4xxUrls
     }
-  };
+  });
 }
 
+// Highlight specific anchor text
 function highlightAnchor(anchorText) {
   if (highlightedElement) {
-    highlightedElement.classList.remove('highlighted'); // Clear previous highlight
+    highlightedElement.classList.remove('highlighted');
     highlightedElement = null;
   }
 
@@ -270,19 +277,18 @@ function highlightAnchor(anchorText) {
 
   const elements = contentArea.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
 
-  let found = false; // Flag to check if any element is found and highlighted
   elements.forEach(el => {
     if (el.textContent.trim() === anchorText.trim()) {
-      el.classList.add('highlighted'); // Set new highlight
+      el.classList.add('highlighted');
       setTimeout(() => {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100); // Allow other events to process
+      }, 100);
       highlightedElement = el;
-      found = true;
     }
   });
 }
 
+// Reset all highlights
 function resetHighlights() {
   const highlightedElements = document.querySelectorAll('.highlighted');
   highlightedElements.forEach(el => {
@@ -293,6 +299,7 @@ function resetHighlights() {
   duplicateLinks.length = 0;
 }
 
+// Highlight all duplicate links
 function highlightAllDuplicates() {
   duplicateLinks.forEach(link => {
     link.classList.add('highlighted');
@@ -301,17 +308,17 @@ function highlightAllDuplicates() {
   if (duplicateLinks.length > 0) {
     setTimeout(() => {
       duplicateLinks[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100); // Allow other events to process
+    }, 100);
   }
 }
 
 function scrollToAnchor(anchorText) {
-  const elements = document.querySelectorAll('a, span, div, p, h1, h2, h3, h4, h5, h6');
+  const elements = document.querySelectorAll('a, span, div, p, h1, h2, h3, h4');
   elements.forEach(el => {
     if (el.textContent.trim() === anchorText.trim()) {
       setTimeout(() => {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100); // Allow other events to process
+      }, 100);
     }
   });
 }
@@ -322,7 +329,7 @@ function scrollToImage(imageUrl) {
     if (img.src === imageUrl || img.getAttribute('data-src') === imageUrl) {
       setTimeout(() => {
         img.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100); // Allow other events to process
+      }, 100);
     }
   });
 }
@@ -337,17 +344,18 @@ function extractHeadings() {
 }
 
 function scrollToPosition(position) {
-  const offset = 100; 
+  const offset = 100;
   window.scrollTo({ top: position - offset, behavior: 'smooth' });
 }
 
+// Chrome runtime listener
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
     if (request.action === 'getContentOverview' || request.action === 'getContentOverviewFromCreate' || request.action === 'getContentOverviewFromEdit') {
       const result = getContentOverview();
       sendResponse(result);
     } else if (request.action === 'getImagesAndLinks') {
-      getImagesAndLinks().then(result => {
+      getImagesAndLinks(sendResponse).then(result => {
         sendResponse(result);
       }).catch(error => {
         sendResponse({ error: error.message });
@@ -381,6 +389,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ error: error.message });
   }
 
-  return true; // Thêm dòng này để giữ cổng mở cho phản hồi không đồng bộ
+  return true;
 });
-
